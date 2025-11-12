@@ -15,4 +15,15 @@ public class ReactNativeBrownfieldModuleImpl: NSObject {
       NotificationCenter.default.post(name: Notification.Name.popToNative, object: nil, userInfo: userInfo)
     }
   }
+  
+  static public func notifyGSMStatusChanged(_ isConnected: Bool) {
+    let userInfo = ["connected": isConnected]
+    DispatchQueue.main.async {
+      NotificationCenter.default.post(
+        name: NSNotification.Name.gsmDeviceStatusChanged,
+        object: nil,
+        userInfo: userInfo
+      )
+    }
+  }
 }

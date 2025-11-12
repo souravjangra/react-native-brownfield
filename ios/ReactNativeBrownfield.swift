@@ -156,4 +156,8 @@ extension Notification.Name {
    * Notification sent to enable/disable the pop gesture recognizer.
    */
   public static let togglePopGestureRecognizer = Notification.Name("TogglePopGestureRecognizerNotification")
+  /**
+   * Notification sent when GSM device status changes.
+   */
+  public static let gsmDeviceStatusChanged = Notification.Name("GSMDeviceStatusChanged")
 }

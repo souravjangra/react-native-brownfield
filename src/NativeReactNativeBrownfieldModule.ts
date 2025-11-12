@@ -18,6 +18,10 @@ export interface Spec extends TurboModule {
    * @platform android
    */
   setHardwareBackButtonEnabled(enabled: boolean): void;
+
+  // Add listener support for TurboModule
+  addListener(eventName: string): void;
+  removeListeners(count: number): void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('ReactNativeBrownfield');
