@@ -70,6 +70,10 @@ RCT_EXPORT_METHOD(popToNative:(BOOL)animated) {
   [ReactNativeBrownfieldModuleImpl popToNativeWithAnimated:animated];
 }
 
+RCT_EXPORT_METHOD(onCTAPressed:(NSString *)action) {
+  [ReactNativeBrownfieldModuleImpl onCTAPressedWithAction:action];
+}
+
 - (void)setHardwareBackButtonEnabled:(BOOL)enabled {
   // Android only
 }

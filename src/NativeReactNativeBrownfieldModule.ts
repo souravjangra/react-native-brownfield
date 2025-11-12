@@ -22,6 +22,8 @@ export interface Spec extends TurboModule {
   // Add listener support for TurboModule
   addListener(eventName: string): void;
   removeListeners(count: number): void;
+
+  onCTAPressed(action: string): void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('ReactNativeBrownfield');

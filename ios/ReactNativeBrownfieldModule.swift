@@ -26,4 +26,15 @@ public class ReactNativeBrownfieldModuleImpl: NSObject {
       )
     }
   }
+
+  static public func onCTAPressed(action: String) {
+    let userInfo = ["action": action]
+    DispatchQueue.main.async {
+      NotificationCenter.default.post(
+        name: NSNotification.Name.ctaPressed,
+        object: nil,
+        userInfo: userInfo
+      )
+    }
+  }
 }

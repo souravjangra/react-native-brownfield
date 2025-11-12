@@ -160,4 +160,9 @@ extension Notification.Name {
    * Notification sent when GSM device status changes.
    */
   public static let gsmDeviceStatusChanged = Notification.Name("GSMDeviceStatusChanged")
+
+  /**
+   * Notification sent when a CTA is pressed.
+   */ 
+  public static let ctaPressed = Notification.Name("CTAPressedNotification")
 }

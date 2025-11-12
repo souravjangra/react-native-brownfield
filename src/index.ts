@@ -21,6 +21,18 @@ const ReactNativeBrownfield = {
       console.warn('Not implemented: setNativeGesturesAndButtonsEnabled');
     }
   },
+
+  addListener: (eventName: string): void => {
+    ReactNativeBrownfieldModule.addListener(eventName);
+  },
+
+  removeListeners: (count: number): void => {
+    ReactNativeBrownfieldModule.removeListeners(count);
+  },
+
+  onCTAPressed: (action: string): void => {
+    ReactNativeBrownfieldModule.onCTAPressed(action);
+  },
 };
 
 export default ReactNativeBrownfield;

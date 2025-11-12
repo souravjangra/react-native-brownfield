@@ -6,11 +6,24 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
 
+/**
+ * Callback interface for CTA button press events from React Native
+ */
+interface CTACallback {
+    fun onCTAPressed(action: String)
+}
+
 class ReactNativeBrownfieldModule(reactContext: ReactApplicationContext) :
     NativeReactNativeBrownfieldModuleSpec(reactContext) {
     companion object {
         var shouldPopToNative: Boolean = false
         private var moduleInstance: ReactNativeBrownfieldModule? = null
+        
+        /**
+         * Callback listener for CTA events from React Native
+         */
+        @JvmStatic
+        var ctaCallback: CTACallback? = null
 
         /**
          * Send GSM device status update to React Native
@@ -62,6 +75,13 @@ class ReactNativeBrownfieldModule(reactContext: ReactApplicationContext) :
     @ReactMethod
     override fun setHardwareBackButtonEnabled(enabled: Boolean) {
         shouldPopToNative = enabled
+    }
+
+    @ReactMethod
+    override fun onCTAPressed(action: String) {
+        reactApplicationContext.currentActivity?.runOnUiThread {
+            ctaCallback?.onCTAPressed(action)
+        }
     }
 
     private fun onBackPressed() {
