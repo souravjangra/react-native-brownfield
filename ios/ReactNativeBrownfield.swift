@@ -2,6 +2,7 @@ import UIKit
 internal import React
 internal import React_RCTAppDelegate
 internal import ReactAppDependencyProvider
+internal import HotUpdater
 
 class ReactNativeBrownfieldDelegate: RCTDefaultReactNativeFactoryDelegate {
   var entryFile = "index"
@@ -17,6 +18,9 @@ class ReactNativeBrownfieldDelegate: RCTDefaultReactNativeFactoryDelegate {
 #if DEBUG
     return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: entryFile)
 #else
+    if let hotUpdaterURL = HotUpdater.bundleURL() {
+        return hotUpdaterURL
+    }
     let resourceURLComponents = bundlePath.components(separatedBy: ".")
     let withoutLast = resourceURLComponents[..<(resourceURLComponents.count - 1)]
     let resourceName = withoutLast.joined()

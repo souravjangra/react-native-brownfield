@@ -41,6 +41,18 @@ internal import React
     }
   }
 
+  public override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    // Hide navigation bar when showing React Native screen
+    navigationController?.setNavigationBarHidden(true, animated: animated)
+  }
+
+  public override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
+    // Show navigation bar when leaving React Native screen
+    navigationController?.setNavigationBarHidden(false, animated: animated)
+  }
+
   deinit {
     NotificationCenter.default.removeObserver(self)
   }
