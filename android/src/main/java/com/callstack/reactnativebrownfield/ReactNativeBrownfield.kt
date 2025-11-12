@@ -17,6 +17,7 @@ import com.facebook.soloader.SoLoader
 import java.util.concurrent.atomic.AtomicBoolean
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
+import com.hotupdater.HotUpdater
 
 fun interface OnJSBundleLoaded {
   operator fun invoke(initialized: Boolean)
@@ -71,10 +72,16 @@ class ReactNativeBrownfield private constructor(val reactHost: ReactHost) {
       onJSBundleLoaded: OnJSBundleLoaded? = null
     ) {
       val reactHost: ReactHost by lazy {
+        // Get JS bundle path from HotUpdater (falls back to embedded bundle)
+        val jsBundlePath = HotUpdater.getJSBundleFile(application.applicationContext)
+        
         getDefaultReactHost(
           context = application,
           packageList = (options["packages"] as? List<*> ?: emptyList<ReactPackage>())
             .filterIsInstance<ReactPackage>(),
+          jsMainModulePath = "index",
+          jsBundleFilePath = jsBundlePath,
+          isHermesEnabled = true,
         )
       }
 

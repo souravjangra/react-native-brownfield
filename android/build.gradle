@@ -128,3 +128,26 @@ dependencies {
   implementation "com.facebook.react:react-native:+"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
+
+// Ensure hot-updater is available at compile time through autolinking
+// Both libraries are autolinked in the main app, so classes are available in the build context
+afterEvaluate {
+  def hotUpdaterProject = rootProject.findProject("hot-updater_react-native")
+  if (hotUpdaterProject == null) {
+    hotUpdaterProject = rootProject.findProject(":hot-updater_react-native")
+  }
+  if (hotUpdaterProject == null) {
+    // Try to find any project with hot-updater in the name
+    rootProject.allprojects.each { proj ->
+      if (proj.name.contains("hot-updater") || proj.name.contains("HotUpdater")) {
+        hotUpdaterProject = proj
+      }
+    }
+  }
+  
+  if (hotUpdaterProject != null) {
+    dependencies {
+      compileOnly hotUpdaterProject
+    }
+  }
+}

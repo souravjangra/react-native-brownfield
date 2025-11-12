@@ -21,6 +21,7 @@ Pod::Spec.new do |spec|
   }
 
   spec.dependency 'ReactAppDependencyProvider'
+  spec.dependency 'HotUpdater'
   add_dependency(spec, "React-RCTAppDelegate")
 
   install_modules_dependencies(spec)
