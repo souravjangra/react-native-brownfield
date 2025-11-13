@@ -40,12 +40,12 @@ class ReactNativeBrownfieldModule(reactContext: ReactApplicationContext) :
     }
 
     @ReactMethod
-    fun addListener(eventName: String) {
+    override fun addListener(eventName: String) {
         // Required for RCTEventEmitter compatibility
     }
 
     @ReactMethod
-    fun removeListeners(count: Double) {
+    override fun removeListeners(count: Double) {
         // Required for RCTEventEmitter compatibility
     }
 
