@@ -1,6 +1,7 @@
 package com.callstack.reactnativebrownfield
 
 import android.app.Application
+import android.content.Context
 import android.os.Bundle
 import android.widget.FrameLayout
 import androidx.activity.OnBackPressedCallback
@@ -8,16 +9,14 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.callstack.reactnativebrownfield.utils.VersionUtils
+import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
-import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactPackage
-import com.facebook.react.bridge.ReactContext
-import com.facebook.react.common.build.ReactBuildConfig
-import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
-import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import java.util.concurrent.atomic.AtomicBoolean
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
+import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 
 fun interface OnJSBundleLoaded {
     operator fun invoke(initialized: Boolean)
@@ -72,16 +71,46 @@ class ReactNativeBrownfield private constructor(val reactHost: ReactHost) {
             onJSBundleLoaded: OnJSBundleLoaded? = null
         ) {
             val reactHost: ReactHost by lazy {
-                getDefaultReactHost(
-                    context = application,
-                    packageList = (options["packages"] as? List<*> ?: emptyList<ReactPackage>())
-                        .filterIsInstance<ReactPackage>(),
-                    jsMainModulePath = options["mainModuleName"] as? String ?: "index",
-                    jsBundleAssetPath = options["bundleAssetPath"] as? String ?: "index.android.bundle",
-                    useDevSupport = options["useDeveloperSupport"] as? Boolean
-                        ?: ReactBuildConfig.DEBUG,
-                    jsRuntimeFactory = null
-                )
+                // Try to get JS bundle path from HotUpdater using reflection (optional dependency)
+                val jsBundlePath = try {
+                    val hotUpdaterClass = Class.forName("com.hotupdater.HotUpdater")
+                    // Try to get the Companion object first (Kotlin static methods)
+                    val companionField = hotUpdaterClass.getDeclaredField("Companion")
+                    val companion = companionField.get(null)
+                    val method = companion.javaClass.getDeclaredMethod("getJSBundleFile", android.content.Context::class.java)
+                    val path = method.invoke(companion, application.applicationContext) as? String
+                    android.util.Log.d("ReactNativeBrownfield", "🔥 HotUpdater getJSBundleFile() returned: $path")
+                    path
+                } catch (e: Exception) {
+                    android.util.Log.w("ReactNativeBrownfield", "⚠️ HotUpdater not available or error: ${e.message}")
+                    e.printStackTrace()
+                    null // HotUpdater not available, will use default bundle
+                }
+                
+                if (jsBundlePath != null) {
+                    android.util.Log.i("ReactNativeBrownfield", "✅ Using HotUpdater bundle: $jsBundlePath")
+                    getDefaultReactHost(
+                        context = application,
+                        packageList = (options["packages"] as? List<*> ?: emptyList<ReactPackage>())
+                            .filterIsInstance<ReactPackage>(),
+                        jsMainModulePath = "index",
+                        jsBundleAssetPath = "index.android.bundle",
+                        jsBundleFilePath = jsBundlePath,
+                        isHermesEnabled = true,
+                        useDevSupport = false,
+                    )
+                } else {
+                    android.util.Log.i("ReactNativeBrownfield", "📦 Using embedded AAR bundle: index.android.bundle")
+                    getDefaultReactHost(
+                        context = application,
+                        packageList = (options["packages"] as? List<*> ?: emptyList<ReactPackage>())
+                            .filterIsInstance<ReactPackage>(),
+                        jsMainModulePath = "index",
+                        jsBundleAssetPath = "index.android.bundle",
+                        isHermesEnabled = true,
+                        useDevSupport = false,
+                    )
+                }
             }
 
             initialize(application, reactHost, onJSBundleLoaded)
@@ -100,14 +129,16 @@ class ReactNativeBrownfield private constructor(val reactHost: ReactHost) {
         }
 
         private fun preloadReactNative(callback: ((Boolean) -> Unit)) {
-            shared.reactHost.addReactInstanceEventListener(object :
-                ReactInstanceEventListener {
-                override fun onReactContextInitialized(context: ReactContext) {
-                    callback(true)
-                    shared.reactHost.removeReactInstanceEventListener(this)
-                }
-            })
-            shared.reactHost.start()
+//      val reactInstanceManager = shared.reactHost.
+//      reactInstanceManager.addReactInstanceEventListener(object :
+//        ReactInstanceEventListener {
+//        override fun onReactContextInitialized(reactContext: ReactContext) {
+//          callback(true)
+//          reactInstanceManager.removeReactInstanceEventListener(this)
+//        }
+//      })
+//      reactInstanceManager?.createReactContextInBackground()
+//    }
         }
     }
 
