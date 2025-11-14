@@ -11,7 +11,10 @@ import androidx.lifecycle.LifecycleOwner
 import com.callstack.reactnativebrownfield.utils.VersionUtils
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
+import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactPackage
+import com.facebook.react.bridge.ReactContext
+import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import java.util.concurrent.atomic.AtomicBoolean
@@ -71,6 +74,8 @@ class ReactNativeBrownfield private constructor(val reactHost: ReactHost) {
             onJSBundleLoaded: OnJSBundleLoaded? = null
         ) {
             val reactHost: ReactHost by lazy {
+                val useDevSupport = options["useDeveloperSupport"] as? Boolean ?: ReactBuildConfig.DEBUG
+                
                 // Try to get JS bundle path from HotUpdater using reflection (optional dependency)
                 val jsBundlePath = try {
                     val hotUpdaterClass = Class.forName("com.hotupdater.HotUpdater")
@@ -88,27 +93,27 @@ class ReactNativeBrownfield private constructor(val reactHost: ReactHost) {
                 }
                 
                 if (jsBundlePath != null) {
-                    android.util.Log.i("ReactNativeBrownfield", "✅ Using HotUpdater bundle: $jsBundlePath")
+                    android.util.Log.i("ReactNativeBrownfield", "✅ Using HotUpdater bundle: $jsBundlePath (DevSupport: $useDevSupport)")
                     getDefaultReactHost(
                         context = application,
                         packageList = (options["packages"] as? List<*> ?: emptyList<ReactPackage>())
                             .filterIsInstance<ReactPackage>(),
-                        jsMainModulePath = "index",
-                        jsBundleAssetPath = "index.android.bundle",
+                        jsMainModulePath = options["mainModuleName"] as? String ?: "index",
+                        jsBundleAssetPath = options["bundleAssetPath"] as? String ?: "index.android.bundle",
                         jsBundleFilePath = jsBundlePath,
                         isHermesEnabled = true,
-                        useDevSupport = false,
+                        useDevSupport = useDevSupport,
                     )
                 } else {
-                    android.util.Log.i("ReactNativeBrownfield", "📦 Using embedded AAR bundle: index.android.bundle")
+                    android.util.Log.i("ReactNativeBrownfield", "📦 Using embedded AAR bundle: index.android.bundle (DevSupport: $useDevSupport)")
                     getDefaultReactHost(
                         context = application,
                         packageList = (options["packages"] as? List<*> ?: emptyList<ReactPackage>())
                             .filterIsInstance<ReactPackage>(),
-                        jsMainModulePath = "index",
-                        jsBundleAssetPath = "index.android.bundle",
+                        jsMainModulePath = options["mainModuleName"] as? String ?: "index",
+                        jsBundleAssetPath = options["bundleAssetPath"] as? String ?: "index.android.bundle",
                         isHermesEnabled = true,
-                        useDevSupport = false,
+                        useDevSupport = useDevSupport,
                     )
                 }
             }
@@ -129,16 +134,14 @@ class ReactNativeBrownfield private constructor(val reactHost: ReactHost) {
         }
 
         private fun preloadReactNative(callback: ((Boolean) -> Unit)) {
-//      val reactInstanceManager = shared.reactHost.
-//      reactInstanceManager.addReactInstanceEventListener(object :
-//        ReactInstanceEventListener {
-//        override fun onReactContextInitialized(reactContext: ReactContext) {
-//          callback(true)
-//          reactInstanceManager.removeReactInstanceEventListener(this)
-//        }
-//      })
-//      reactInstanceManager?.createReactContextInBackground()
-//    }
+            shared.reactHost.addReactInstanceEventListener(object :
+                ReactInstanceEventListener {
+                override fun onReactContextInitialized(context: ReactContext) {
+                    callback(true)
+                    shared.reactHost.removeReactInstanceEventListener(this)
+                }
+            })
+            shared.reactHost.start()
         }
     }
 
