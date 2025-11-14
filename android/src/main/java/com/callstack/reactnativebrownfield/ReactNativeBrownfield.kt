@@ -75,7 +75,7 @@ class ReactNativeBrownfield private constructor(val reactHost: ReactHost) {
         ) {
             val reactHost: ReactHost by lazy {
                 val useDevSupport = options["useDeveloperSupport"] as? Boolean ?: ReactBuildConfig.DEBUG
-                
+
                 // Try to get JS bundle path from HotUpdater using reflection (optional dependency)
                 val jsBundlePath = try {
                     val hotUpdaterClass = Class.forName("com.hotupdater.HotUpdater")
@@ -91,7 +91,7 @@ class ReactNativeBrownfield private constructor(val reactHost: ReactHost) {
                     e.printStackTrace()
                     null // HotUpdater not available, will use default bundle
                 }
-                
+
                 if (jsBundlePath != null) {
                     android.util.Log.i("ReactNativeBrownfield", "✅ Using HotUpdater bundle: $jsBundlePath (DevSupport: $useDevSupport)")
                     getDefaultReactHost(
@@ -129,6 +129,22 @@ class ReactNativeBrownfield private constructor(val reactHost: ReactHost) {
             onJSBundleLoaded: OnJSBundleLoaded? = null
         ) {
             val options = hashMapOf("packages" to packages, "mainModuleName" to "index")
+
+            initialize(application, options, onJSBundleLoaded)
+        }
+
+        @JvmStatic
+        fun initialize(
+            application: Application,
+            packages: List<ReactPackage>,
+            useDeveloperSupport: Boolean = false,
+            onJSBundleLoaded: OnJSBundleLoaded? = null
+        ) {
+            val options = hashMapOf(
+                "packages" to packages,
+                "mainModuleName" to "index",
+                "useDeveloperSupport" to useDeveloperSupport
+            )
 
             initialize(application, options, onJSBundleLoaded)
         }
