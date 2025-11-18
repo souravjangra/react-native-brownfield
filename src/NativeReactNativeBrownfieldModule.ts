@@ -24,6 +24,7 @@ export interface Spec extends TurboModule {
   removeListeners(count: number): void;
 
   onCTAPressed(action: string): void;
+  sendDebugLog(level: string, message: string, context: string | null, timestamp: number): void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('ReactNativeBrownfield');

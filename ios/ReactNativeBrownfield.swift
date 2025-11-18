@@ -165,4 +165,9 @@ extension Notification.Name {
    * Notification sent when a CTA is pressed.
    */ 
   public static let ctaPressed = Notification.Name("CTAPressedNotification")
+
+  /**
+   * Notification sent when a debug log is emitted from React Native.
+   */
+  public static let debugLogReceived = Notification.Name("DebugLogReceivedNotification")
 }

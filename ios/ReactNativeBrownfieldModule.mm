@@ -74,6 +74,16 @@ RCT_EXPORT_METHOD(onCTAPressed:(NSString *)action) {
   [ReactNativeBrownfieldModuleImpl onCTAPressedWithAction:action];
 }
 
+RCT_EXPORT_METHOD(sendDebugLog:(NSString *)level 
+                  message:(NSString *)message 
+                  context:(NSString *)context 
+                  timestamp:(double)timestamp) {
+  [ReactNativeBrownfieldModuleImpl sendDebugLogWithLevel:level 
+                                                  message:message 
+                                                  context:context 
+                                                timestamp:timestamp];
+}
+
 - (void)setHardwareBackButtonEnabled:(BOOL)enabled {
   // Android only
 }

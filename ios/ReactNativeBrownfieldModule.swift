@@ -37,4 +37,22 @@ public class ReactNativeBrownfieldModuleImpl: NSObject {
       )
     }
   }
+
+  static public func sendDebugLog(level: String, message: String, context: String?, timestamp: Double) {
+    var userInfo: [String: Any] = [
+      "level": level,
+      "message": message,
+      "timestamp": timestamp
+    ]
+    if let context = context {
+      userInfo["context"] = context
+    }
+    DispatchQueue.main.async {
+      NotificationCenter.default.post(
+        name: NSNotification.Name.debugLogReceived,
+        object: nil,
+        userInfo: userInfo
+      )
+    }
+  }
 }

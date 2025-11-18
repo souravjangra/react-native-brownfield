@@ -33,6 +33,10 @@ const ReactNativeBrownfield = {
   onCTAPressed: (action: string): void => {
     ReactNativeBrownfieldModule.onCTAPressed(action);
   },
+
+  sendDebugLog: (level: string, message: string, context: string | null, timestamp: number): void => {
+    ReactNativeBrownfieldModule.sendDebugLog(level, message, context, timestamp);
+  },
 };
 
 export default ReactNativeBrownfield;

@@ -14,6 +14,13 @@ interface CTACallback {
   fun onCTAPressed(action: String)
 }
 
+/**
+ * Callback interface for debug log messages from React Native
+ */
+interface DebugLogCallback {
+  fun onDebugLog(level: String, message: String, context: String?, timestamp: Double)
+}
+
 class ReactNativeBrownfieldModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
   companion object {
@@ -25,6 +32,12 @@ class ReactNativeBrownfieldModule(reactContext: ReactApplicationContext) :
      */
     @JvmStatic
     var ctaCallback: CTACallback? = null
+
+    /**
+     * Callback listener for debug log messages from React Native
+     */
+    @JvmStatic
+    var debugLogCallback: DebugLogCallback? = null
 
     /**
      * Send GSM device status update to React Native
@@ -82,6 +95,13 @@ class ReactNativeBrownfieldModule(reactContext: ReactApplicationContext) :
   fun onCTAPressed(action: String) {
     reactApplicationContext.currentActivity?.runOnUiThread {
       ctaCallback?.onCTAPressed(action)
+    }
+  }
+
+  @ReactMethod
+  fun sendDebugLog(level: String, message: String, context: String?, timestamp: Double) {
+    reactApplicationContext.currentActivity?.runOnUiThread {
+      debugLogCallback?.onDebugLog(level, message, context, timestamp)
     }
   }
 
