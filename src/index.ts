@@ -37,6 +37,10 @@ const ReactNativeBrownfield = {
   sendDebugLog: (level: string, message: string, context: string | null, timestamp: number): void => {
     ReactNativeBrownfieldModule.sendDebugLog(level, message, context, timestamp);
   },
+
+  analyticsEventCallback: (eventName: string, eventProperties: Record<string, any>): void => {
+    ReactNativeBrownfieldModule.sendAnalyticsEvent(eventName, JSON.stringify(eventProperties));
+  },
 };
 
 export default ReactNativeBrownfield;

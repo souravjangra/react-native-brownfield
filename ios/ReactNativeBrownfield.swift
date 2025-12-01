@@ -170,4 +170,9 @@ extension Notification.Name {
    * Notification sent when a debug log is emitted from React Native.
    */
   public static let debugLogReceived = Notification.Name("DebugLogReceivedNotification")
+
+  /**
+   * Notification sent when an analytics event is triggered from React Native.
+   */
+  public static let analyticsEventReceived = Notification.Name("AnalyticsEventReceivedNotification")
 }

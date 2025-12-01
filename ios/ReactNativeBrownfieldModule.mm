@@ -84,6 +84,12 @@ RCT_EXPORT_METHOD(sendDebugLog:(NSString *)level
                                                 timestamp:timestamp];
 }
 
+RCT_EXPORT_METHOD(sendAnalyticsEvent:(NSString *)eventName 
+                  eventProperties:(NSString *)eventProperties) {
+  [ReactNativeBrownfieldModuleImpl sendAnalyticsEventWithEventName:eventName 
+                                                   eventProperties:eventProperties];
+}
+
 - (void)setHardwareBackButtonEnabled:(BOOL)enabled {
   // Android only
 }

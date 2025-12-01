@@ -20,6 +20,13 @@ interface DebugLogCallback {
     fun onDebugLog(level: String, message: String, context: String?, timestamp: Double)
 }
 
+/**
+ * Callback interface for analytics events from React Native
+ */
+interface AnalyticsEventCallback {
+    fun onAnalyticsEvent(eventName: String, eventProperties: Map<String, Any>)
+}
+
 class ReactNativeBrownfieldModule(reactContext: ReactApplicationContext) :
     NativeReactNativeBrownfieldModuleSpec(reactContext) {
     companion object {
@@ -37,6 +44,12 @@ class ReactNativeBrownfieldModule(reactContext: ReactApplicationContext) :
          */
         @JvmStatic
         var debugLogCallback: DebugLogCallback? = null
+
+        /**
+         * Callback listener for analytics events from React Native
+         */
+        @JvmStatic
+        var analyticsEventCallback: AnalyticsEventCallback? = null
 
         /**
          * Send GSM device status update to React Native
@@ -101,6 +114,22 @@ class ReactNativeBrownfieldModule(reactContext: ReactApplicationContext) :
     override fun sendDebugLog(level: String, message: String, context: String?, timestamp: Double) {
         reactApplicationContext.currentActivity?.runOnUiThread {
             debugLogCallback?.onDebugLog(level, message, context, timestamp)
+        }
+    }
+
+    @ReactMethod
+    override fun sendAnalyticsEvent(eventName: String, eventProperties: String) {
+        reactApplicationContext.currentActivity?.runOnUiThread {
+            try {
+                // Parse JSON string to Map
+                val gson = com.google.gson.Gson()
+                val mapType = object : com.google.gson.reflect.TypeToken<Map<String, Any>>() {}.type
+                val propertiesMap: Map<String, Any> = gson.fromJson(eventProperties, mapType)
+                analyticsEventCallback?.onAnalyticsEvent(eventName, propertiesMap)
+            } catch (e: Exception) {
+                // Fallback to empty map if JSON parsing fails
+                analyticsEventCallback?.onAnalyticsEvent(eventName, emptyMap())
+            }
         }
     }
 

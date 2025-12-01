@@ -55,4 +55,33 @@ public class ReactNativeBrownfieldModuleImpl: NSObject {
       )
     }
   }
+
+  static public func sendAnalyticsEvent(eventName: String, eventProperties: String) {
+    var userInfo: [String: Any] = [
+      "eventName": eventName
+    ]
+    
+    // Parse JSON string to Dictionary
+    if let data = eventProperties.data(using: .utf8) {
+      do {
+        if let propertiesDict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+          userInfo["eventProperties"] = propertiesDict
+        } else {
+          userInfo["eventProperties"] = [:]
+        }
+      } catch {
+        userInfo["eventProperties"] = [:]
+      }
+    } else {
+      userInfo["eventProperties"] = [:]
+    }
+    
+    DispatchQueue.main.async {
+      NotificationCenter.default.post(
+        name: NSNotification.Name.analyticsEventReceived,
+        object: nil,
+        userInfo: userInfo
+      )
+    }
+  }
 }
