@@ -5,6 +5,8 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 /**
  * Callback interface for CTA button press events from React Native
