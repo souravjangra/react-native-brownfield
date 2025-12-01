@@ -5,8 +5,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import org.json.JSONObject
 
 /**
  * Callback interface for CTA button press events from React Native
@@ -124,9 +123,13 @@ class ReactNativeBrownfieldModule(reactContext: ReactApplicationContext) :
         reactApplicationContext.currentActivity?.runOnUiThread {
             try {
                 // Parse JSON string to Map
-                val gson = com.google.gson.Gson()
-                val mapType = object : com.google.gson.reflect.TypeToken<Map<String, Any>>() {}.type
-                val propertiesMap: Map<String, Any> = gson.fromJson(eventProperties, mapType)
+                val jsonObject = JSONObject(eventProperties)
+                val propertiesMap = mutableMapOf<String, Any>()
+                val keys = jsonObject.keys()
+                while (keys.hasNext()) {
+                    val key = keys.next()
+                    propertiesMap[key] = jsonObject.get(key)
+                }
                 analyticsEventCallback?.onAnalyticsEvent(eventName, propertiesMap)
             } catch (e: Exception) {
                 // Fallback to empty map if JSON parsing fails
